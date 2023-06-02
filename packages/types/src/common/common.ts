@@ -126,6 +126,7 @@ export type DeleteResponse = {
 }
 
 export interface EmptyQueryParams {}
+export interface RepositoryTransformOptions {}
 
 export interface DateComparisonOperator {
   lt?: Date

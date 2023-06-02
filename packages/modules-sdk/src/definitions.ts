@@ -9,6 +9,7 @@ export enum Modules {
   STOCK_LOCATION = "stockLocationService",
   INVENTORY = "inventoryService",
   CACHE = "cacheService",
+  PRODUCT = "productService",
 }
 
 export const ModulesDefinition: { [key: string]: ModuleDefinition } = {
@@ -61,6 +62,18 @@ export const ModulesDefinition: { [key: string]: ModuleDefinition } = {
     defaultModuleDeclaration: {
       scope: MODULE_SCOPE.INTERNAL,
       resources: MODULE_RESOURCE_TYPE.SHARED,
+    },
+  },
+  [Modules.PRODUCT]: {
+    key: Modules.PRODUCT,
+    registrationName: "productService",
+    defaultPackage: false,
+    label: "productService",
+    isRequired: false,
+    canOverride: true,
+    dependencies: [],
+    defaultModuleDeclaration: {
+      scope: MODULE_SCOPE.EXTERNAL,
     },
   },
 }

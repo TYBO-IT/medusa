@@ -5,8 +5,8 @@ import {
   ModuleDefinition,
   ModuleResolution,
 } from "@medusajs/types"
-import resolveCwd from "resolve-cwd"
 import MODULE_DEFINITIONS from "../definitions"
+import resolveCwd from "resolve-cwd"
 
 export const registerModules = (
   modules?: Record<
@@ -70,6 +70,7 @@ function getInternalModuleResolution(
     if (!moduleConfig && definition.isRequired) {
       throw new Error(`Module: ${definition.label} is required`)
     }
+
     if (!moduleConfig) {
       return {
         resolutionPath: false,

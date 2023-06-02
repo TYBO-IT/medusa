@@ -3,14 +3,15 @@ import {
   InternalModuleDeclaration,
   Logger,
   MedusaContainer,
-  ModuleExports,
-  ModuleResolution,
   MODULE_RESOURCE_TYPE,
   MODULE_SCOPE,
+  ModuleExports,
+  ModuleResolution,
 } from "@medusajs/types"
 import { createMedusaContainer } from "@medusajs/utils"
 import { asFunction, asValue } from "awilix"
-import { trackInstallation } from "medusa-telemetry"
+
+// import { trackInstallation } from "medusa-telemetry"
 
 export async function loadInternalModule(
   container: MedusaContainer,
@@ -24,7 +25,9 @@ export async function loadInternalModule(
 
   let loadedModule: ModuleExports
   try {
-    loadedModule = (await import(resolution.resolutionPath as string)).default
+    loadedModule =
+      resolution.moduleExports ??
+      (await import(resolution.resolutionPath as string)).default
   } catch (error) {
     if (
       resolution.definition.isRequired &&
@@ -119,6 +122,7 @@ export async function loadInternalModule(
     }).singleton(),
   })
 
+  /*
   trackInstallation(
     {
       module: resolution.definition.key,
@@ -126,6 +130,7 @@ export async function loadInternalModule(
     },
     "module"
   )
+  */
 }
 
 export async function loadModuleMigrations(

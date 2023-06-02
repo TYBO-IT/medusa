@@ -3,8 +3,13 @@ import {
   InternalModuleDeclaration,
   MODULE_RESOURCE_TYPE,
   MODULE_SCOPE,
+  ModuleExports,
 } from "@medusajs/types"
-import { createMedusaContainer } from "@medusajs/utils"
+import {
+  createMedusaContainer,
+  simpleHash,
+  stringifyCircular,
+} from "@medusajs/utils"
 import { asValue } from "awilix"
 import { moduleLoader, registerMedusaModule } from "./loaders"
 import { loadModuleMigrations } from "./loaders/utils"
@@ -22,12 +27,17 @@ export class MedusaModule {
     moduleKey: string,
     defaultPath: string,
     declaration?: InternalModuleDeclaration | ExternalModuleDeclaration,
+    moduleExports?: ModuleExports,
     injectedDependencies?: Record<string, any>
   ): Promise<{
     [key: string]: any
   }> {
-    if (MedusaModule.instances_.has(moduleKey)) {
-      return MedusaModule.instances_.get(moduleKey)
+    const hashKey = simpleHash(
+      stringifyCircular({ moduleKey, defaultPath, declaration })
+    )
+
+    if (MedusaModule.instances_.has(hashKey)) {
+      return MedusaModule.instances_.get(hashKey)
     }
 
     let modDeclaration = declaration
@@ -50,7 +60,15 @@ export class MedusaModule {
 
     const moduleResolutions = registerMedusaModule(moduleKey, modDeclaration!)
 
-    await moduleLoader({ container, moduleResolutions, logger })
+    if (moduleResolutions[moduleKey]) {
+      moduleResolutions[moduleKey].moduleExports = moduleExports
+    }
+
+    await moduleLoader({
+      container,
+      moduleResolutions,
+      logger,
+    })
 
     const services = {}
 
@@ -61,7 +79,7 @@ export class MedusaModule {
       services[keyName] = container.resolve(registrationName)
     }
 
-    MedusaModule.instances_.set(moduleKey, services)
+    MedusaModule.instances_.set(hashKey, services)
 
     return services
   }
