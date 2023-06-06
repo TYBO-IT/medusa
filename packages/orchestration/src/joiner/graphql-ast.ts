@@ -94,10 +94,7 @@ class GraphQLParser {
           return
         }
 
-        const propName = this.fieldToServiceMap?.has(fieldNode.name.value)
-          ? this.fieldToServiceMap.get(fieldNode.name.value)!
-          : fieldNode.name.value
-
+        const propName = fieldNode.name.value
         const entityName = parentName ? `${parentName}.${propName}` : propName
 
         const nestedEntity: Entity = {
@@ -134,8 +131,12 @@ class GraphQLParser {
     const rootFieldNode = queryDefinition.selectionSet
       .selections[0] as FieldNode
 
+    const propName = this.fieldToServiceMap?.has(rootFieldNode.name.value)
+      ? this.fieldToServiceMap.get(rootFieldNode.name.value)!
+      : rootFieldNode.name.value
+
     const remoteJoinConfig: RemoteJoinerQuery = {
-      service: rootFieldNode.name.value,
+      service: propName,
       fields: [],
       expands: [],
     }
@@ -148,10 +149,11 @@ class GraphQLParser {
       remoteJoinConfig.fields = rootFieldNode.selectionSet.selections.map(
         (field) => (field as FieldNode).name.value
       )
+
       remoteJoinConfig.expands = this.extractEntities(
         rootFieldNode.selectionSet,
-        rootFieldNode.name.value,
-        rootFieldNode.name.value
+        propName,
+        propName
       )
     }
 

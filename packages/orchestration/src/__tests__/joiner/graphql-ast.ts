@@ -77,6 +77,48 @@ describe("RemoteJoiner.parseQuery", () => {
     })
   })
 
+  it("Simple query with mapping fields to services", async () => {
+    const graphqlQuery = `
+      query {
+          order {
+              id
+              number
+              date
+              products {
+                product_id
+                variant_id
+                order
+                variant {
+                  name
+                  sku
+                }
+              }
+          }
+      }
+    `
+    const parser = new GraphQLParser(
+      graphqlQuery,
+      {},
+      new Map([["order", "orderService"]])
+    )
+    const rjQuery = parser.parseQuery()
+
+    expect(rjQuery).toEqual({
+      service: "orderService",
+      fields: ["id", "number", "date", "products"],
+      expands: [
+        {
+          property: "products",
+          fields: ["product_id", "variant_id", "order", "variant"],
+        },
+        {
+          property: "products.variant",
+          fields: ["name", "sku"],
+        },
+      ],
+    })
+  })
+
   it("Nested query with fields", async () => {
     const graphqlQuery = `
       query {

@@ -49,7 +49,7 @@ describe("RemoteJoiner", () => {
 
   it("Simple query of a service, its id and no fields specified", async () => {
     const query = {
-      service: "User",
+      service: "user",
       args: [
         {
           name: "id",
@@ -82,7 +82,7 @@ describe("RemoteJoiner", () => {
 
   it("Simple query of a service, its id and a few fields specified", async () => {
     const query = {
-      service: "User",
+      service: "user",
       args: [
         {
           name: "id",
@@ -148,7 +148,7 @@ describe("RemoteJoiner", () => {
 
   it("Query a service using more than 1 argument, expanding a property with another argument", async () => {
     const query = {
-      service: "User",
+      service: "user",
       args: [
         {
           name: "id",
@@ -213,7 +213,7 @@ describe("RemoteJoiner", () => {
 
   it("Query a service expanding multiple nested properties", async () => {
     const query = {
-      service: "Order",
+      service: "order",
       fields: ["number", "date", "products"],
       expands: [
         {

@@ -5,7 +5,7 @@ import {
   RemoteJoinerQuery,
   RemoteNestedExpands,
 } from "@medusajs/types"
-import { isDefined, toPascalCase } from "@medusajs/utils"
+import { isDefined } from "@medusajs/utils"
 import GraphQLParser from "./graphql-ast"
 
 const BASE_PATH = "_root"
@@ -526,7 +526,6 @@ export class RemoteJoiner {
   }
 
   async query(queryObj: RemoteJoinerQuery): Promise<any> {
-    queryObj.service = toPascalCase(queryObj.service)
     const serviceConfig = this.findServiceConfig(queryObj.service)
 
     if (!serviceConfig) {
