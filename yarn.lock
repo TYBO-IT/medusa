@@ -6285,7 +6285,7 @@ __metadata:
   resolution: "@medusajs/product@workspace:packages/product"
   dependencies:
     "@medusajs/modules-sdk": ^1.8.3
-    "@medusajs/types": "workspace:^"
+    "@medusajs/types": "*"
     "@medusajs/utils": ^1.8.2
     "@mikro-orm/cli": 5.7.4
     "@mikro-orm/core": 5.7.4
@@ -6294,6 +6294,7 @@ __metadata:
     awilix: ^8.0.0
     cross-env: ^5.2.1
     jest: ^25.5.4
+    lodash: ^4.17.21
     medusa-test-utils: ^1.1.40
     rimraf: ^5.0.0
     ts-jest: ^25.5.1
@@ -6319,7 +6320,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@medusajs/types@1.8.7, @medusajs/types@^1.8.7, @medusajs/types@workspace:^, @medusajs/types@workspace:packages/types":
+"@medusajs/types@*, @medusajs/types@1.8.7, @medusajs/types@workspace:packages/types":
   version: 0.0.0-use.local
   resolution: "@medusajs/types@workspace:packages/types"
   dependencies:
