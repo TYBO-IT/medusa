@@ -11,32 +11,7 @@ function getEnv(key: string): string {
 function isProductServiceInitializeOptions(
   obj: unknown
 ): obj is ProductServiceInitializeOptions {
-  return !!(obj as ProductServiceInitializeOptions).database
-}
-
-export function loadDatabaseConfig(
-  options?:
-    | ProductServiceInitializeOptions
-    | ProductServiceInitializeCustomDataLayerOptions
-): ProductServiceInitializeOptions["database"] {
-  const clientUrl = getEnv("POSTGRES_URL")
-
-  const database: ProductServiceInitializeOptions["database"] = {
-    clientUrl: getEnv("POSTGRES_URL"),
-    schema: getEnv("POSTGRES_SCHEMA") ?? "public",
-    driverOptions: JSON.parse(
-      getEnv("POSTGRES_DRIVER_OPTIONS") ||
-        JSON.stringify(getDefaultDriverOptions(clientUrl))
-    ),
-  }
-
-  if (isProductServiceInitializeOptions(options)) {
-    database.clientUrl = options.database.clientUrl ?? database.clientUrl
-    database.schema = options.database.schema ?? database.schema
-    database.driverOptions = options.database.driverOptions ?? {}
-  }
-
-  return database
+  return !!(obj as ProductServiceInitializeOptions)?.database
 }
 
 function getDefaultDriverOptions(
@@ -65,4 +40,36 @@ function getDefaultDriverOptions(
     : process.env.NODE_ENV?.match(/dev/i)
     ? localOptions
     : {}
+}
+
+/**
+ * Load the config for the database connection. The options can be retrieved
+ * through PRODUCT_* (e.g PRODUCT_POSTGRES_URL) or * (e.g POSTGRES_URL) environment variables or the options object.
+ * @param options
+ */
+export function loadDatabaseConfig(
+  options?:
+    | ProductServiceInitializeOptions
+    | ProductServiceInitializeCustomDataLayerOptions
+): ProductServiceInitializeOptions["database"] {
+  const clientUrl = getEnv("POSTGRES_URL")
+
+  const database: ProductServiceInitializeOptions["database"] = {
+    clientUrl: getEnv("POSTGRES_URL"),
+    schema: getEnv("POSTGRES_SCHEMA") ?? "public",
+    driverOptions: JSON.parse(
+      getEnv("POSTGRES_DRIVER_OPTIONS") ||
+        JSON.stringify(getDefaultDriverOptions(clientUrl))
+    ),
+  }
+
+  if (isProductServiceInitializeOptions(options)) {
+    database.clientUrl = options.database.clientUrl ?? database.clientUrl
+    database.schema = options.database.schema ?? database.schema
+    database.driverOptions =
+      options.database.driverOptions ??
+      getDefaultDriverOptions(database.clientUrl)
+  }
+
+  return database
 }
