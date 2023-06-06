@@ -24,7 +24,11 @@ interface Entity {
 class GraphQLParser {
   private ast: DocumentNode
 
-  constructor(input: string, private variables?: { [key: string]: unknown }) {
+  constructor(
+    input: string,
+    private variables?: { [key: string]: unknown },
+    private fieldToServiceMap?: Map<string, string>
+  ) {
     this.ast = parse(input)
     this.variables = variables || {}
   }
@@ -86,28 +90,32 @@ class GraphQLParser {
       if (selection.kind === "Field") {
         const fieldNode = selection as FieldNode
 
-        if (fieldNode.selectionSet) {
-          const entityName = parentName
-            ? `${parentName}.${fieldNode.name.value}`
-            : fieldNode.name.value
-
-          const nestedEntity: Entity = {
-            property: entityName.replace(`${mainService}.`, ""),
-            fields: fieldNode.selectionSet.selections.map(
-              (field) => (field as FieldNode).name.value
-            ),
-            args: this.parseArguments(fieldNode.arguments!),
-          }
-
-          entities.push(nestedEntity)
-          entities.push(
-            ...this.extractEntities(
-              fieldNode.selectionSet,
-              entityName,
-              mainService
-            )
-          )
+        if (!fieldNode.selectionSet) {
+          return
         }
+
+        const propName = this.fieldToServiceMap?.has(fieldNode.name.value)
+          ? this.fieldToServiceMap.get(fieldNode.name.value)!
+          : fieldNode.name.value
+
+        const entityName = parentName ? `${parentName}.${propName}` : propName
+
+        const nestedEntity: Entity = {
+          property: entityName.replace(`${mainService}.`, ""),
+          fields: fieldNode.selectionSet.selections.map(
+            (field) => (field as FieldNode).name.value
+          ),
+          args: this.parseArguments(fieldNode.arguments!),
+        }
+
+        entities.push(nestedEntity)
+        entities.push(
+          ...this.extractEntities(
+            fieldNode.selectionSet,
+            entityName,
+            mainService
+          )
+        )
       }
     })
 

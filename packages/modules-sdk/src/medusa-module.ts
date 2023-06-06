@@ -1,8 +1,10 @@
 import {
   ExternalModuleDeclaration,
   InternalModuleDeclaration,
+  JoinerServiceConfig,
   MODULE_RESOURCE_TYPE,
   MODULE_SCOPE,
+  ModuleDefinition,
   ModuleExports,
 } from "@medusajs/types"
 import {
@@ -21,16 +23,31 @@ const logger: any = {
   error: (a) => console.error(a),
 }
 
+declare global {
+  interface MedusaModule {
+    getLoadedModules(): Map<string, any>
+  }
+}
+
 export class MedusaModule {
   private static instances_: Map<string, any> = new Map()
-  public static async bootstrap(
+  public static getLoadedModules(): Map<
+    string,
+    any & {
+      __joinerConfig: JoinerServiceConfig
+      __definition: ModuleDefinition
+    }
+  > {
+    return MedusaModule.instances_
+  }
+  public static async bootstrap<T>(
     moduleKey: string,
     defaultPath: string,
     declaration?: InternalModuleDeclaration | ExternalModuleDeclaration,
     moduleExports?: ModuleExports,
     injectedDependencies?: Record<string, any>
   ): Promise<{
-    [key: string]: any
+    [key: string]: T
   }> {
     const hashKey = simpleHash(
       stringifyCircular({ moduleKey, defaultPath, declaration })
@@ -77,6 +94,13 @@ export class MedusaModule {
       const registrationName = resolution.definition.registrationName
 
       services[keyName] = container.resolve(registrationName)
+      services[keyName].__definition = resolution.definition
+
+      if (resolution.definition.isQueryable) {
+        services[keyName].__joinerConfig = await services[
+          keyName
+        ].__joinerConfig()
+      }
     }
 
     MedusaModule.instances_.set(hashKey, services)

@@ -78,8 +78,12 @@ export class RemoteJoiner {
     }, {})
   }
 
-  static parseQuery(graphqlQuery: string, variables?: any): RemoteJoinerQuery {
-    const parser = new GraphQLParser(graphqlQuery, variables)
+  static parseQuery(
+    graphqlQuery: string,
+    variables?: any,
+    fieldToServiceMap?: Map<string, string>
+  ): RemoteJoinerQuery {
+    const parser = new GraphQLParser(graphqlQuery, variables, fieldToServiceMap)
     return parser.parseQuery()
   }
 

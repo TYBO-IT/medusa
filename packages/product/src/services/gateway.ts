@@ -1,10 +1,16 @@
 import {
+  FindConfig,
+  JoinerServiceConfig,
+  ProductTypes,
+  SharedContext,
+} from "@medusajs/types"
+import { Product, ProductCollection, ProductTag, ProductVariant } from "@models"
+import {
   ProductService,
   ProductTagService,
   ProductVariantService,
 } from "@services"
-import { Product, ProductCollection, ProductTag, ProductVariant } from "@models"
-import { FindConfig, ProductTypes, SharedContext } from "@medusajs/types"
+import { joinerConfig } from "./../joiner-config"
 
 type InjectedDependencies = {
   productService: ProductService<any>
@@ -37,6 +43,10 @@ export default class GatewayService<
     this.productService_ = productService
     this.productVariantService = productVariantService
     this.productTagService = productTagService
+  }
+
+  __joinerConfig(): JoinerServiceConfig {
+    return joinerConfig
   }
 
   async list(

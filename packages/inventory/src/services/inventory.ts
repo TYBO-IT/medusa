@@ -10,6 +10,7 @@ import {
   IInventoryService,
   InventoryItemDTO,
   InventoryLevelDTO,
+  JoinerServiceConfig,
   MODULE_RESOURCE_TYPE,
   ReservationItemDTO,
   SharedContext,
@@ -22,6 +23,7 @@ import {
   MedusaError,
 } from "@medusajs/utils"
 import { EntityManager } from "typeorm"
+import { joinerConfig } from "../joiner-config"
 import InventoryItemService from "./inventory-item"
 import InventoryLevelService from "./inventory-level"
 import ReservationItemService from "./reservation-item"
@@ -53,6 +55,10 @@ export default class InventoryService implements IInventoryService {
     this.inventoryItemService_ = inventoryItemService
     this.inventoryLevelService_ = inventoryLevelService
     this.reservationItemService_ = reservationItemService
+  }
+
+  __joinerConfig(): JoinerServiceConfig {
+    return joinerConfig
   }
 
   /**

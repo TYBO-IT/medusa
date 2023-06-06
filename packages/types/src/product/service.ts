@@ -1,3 +1,6 @@
+import { FindConfig } from "../common"
+import { JoinerServiceConfig } from "../joiner"
+import { SharedContext } from "../shared-context"
 import {
   FilterableProductCollectionProps,
   FilterableProductProps,
@@ -8,8 +11,6 @@ import {
   ProductTagDTO,
   ProductVariantDTO,
 } from "./common"
-import { FindConfig } from "../common"
-import { SharedContext } from "../shared-context"
 
 export interface IProductService<
   TProduct = any,
@@ -17,6 +18,7 @@ export interface IProductService<
   TProductTag = any,
   TProductCollection = any
 > {
+  __joinerConfig(): JoinerServiceConfig
   list(
     filter: FilterableProductProps,
     config?: FindConfig<ProductDTO>,

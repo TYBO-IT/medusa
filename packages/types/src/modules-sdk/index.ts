@@ -1,5 +1,6 @@
 import { Logger as _Logger } from "winston"
 import { MedusaContainer } from "../common/medusa-container"
+import { JoinerServiceConfig } from "../joiner"
 
 export type Constructor<T> = new (...args: any[]) => T
 export * from "../common/medusa-container"
@@ -63,6 +64,8 @@ export type ModuleDefinition = {
   label: string
   canOverride?: boolean
   isRequired?: boolean
+  isQueryable?: boolean // If the modules should be queryable via Remote Joiner
+  queryPropertyName?: string // Name to use when querying the module via Remote Joiner
   dependencies?: string[]
   defaultModuleDeclaration:
     | InternalModuleDeclaration
@@ -98,4 +101,5 @@ export type ModuleExports = {
     options: LoaderOptions,
     moduleDeclaration?: InternalModuleDeclaration
   ): Promise<void>
+  joinerConfig?: JoinerServiceConfig
 }

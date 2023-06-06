@@ -1,7 +1,7 @@
 import {
-  ModuleDefinition,
   MODULE_RESOURCE_TYPE,
   MODULE_SCOPE,
+  ModuleDefinition,
 } from "@medusajs/types"
 
 export enum Modules {
@@ -11,6 +11,18 @@ export enum Modules {
   CACHE = "cacheService",
   PRODUCT = "productService",
 }
+
+export enum ModuleQueryProperty {
+  STOCK_LOCATION = "stock_location",
+  INVENTORY = "inventory",
+  PRODUCT = "product",
+}
+
+export const ModuleQueryPropertyMap = new Map<ModuleQueryProperty, Modules>([
+  [ModuleQueryProperty.STOCK_LOCATION, Modules.STOCK_LOCATION],
+  [ModuleQueryProperty.INVENTORY, Modules.INVENTORY],
+  [ModuleQueryProperty.PRODUCT, Modules.PRODUCT],
+])
 
 export const ModulesDefinition: { [key: string]: ModuleDefinition } = {
   [Modules.EVENT_BUS]: {
@@ -33,6 +45,8 @@ export const ModulesDefinition: { [key: string]: ModuleDefinition } = {
     label: "StockLocationService",
     isRequired: false,
     canOverride: true,
+    isQueryable: true,
+    queryPropertyName: ModuleQueryProperty.STOCK_LOCATION,
     dependencies: ["eventBusService"],
     defaultModuleDeclaration: {
       scope: MODULE_SCOPE.INTERNAL,
@@ -46,6 +60,8 @@ export const ModulesDefinition: { [key: string]: ModuleDefinition } = {
     label: "InventoryService",
     isRequired: false,
     canOverride: true,
+    isQueryable: true,
+    queryPropertyName: ModuleQueryProperty.INVENTORY,
     dependencies: ["eventBusService"],
     defaultModuleDeclaration: {
       scope: MODULE_SCOPE.INTERNAL,
@@ -68,12 +84,15 @@ export const ModulesDefinition: { [key: string]: ModuleDefinition } = {
     key: Modules.PRODUCT,
     registrationName: "productService",
     defaultPackage: false,
-    label: "productService",
+    label: "ProductService",
     isRequired: false,
     canOverride: true,
+    isQueryable: true,
+    queryPropertyName: ModuleQueryProperty.PRODUCT,
     dependencies: [],
     defaultModuleDeclaration: {
-      scope: MODULE_SCOPE.EXTERNAL,
+      scope: MODULE_SCOPE.INTERNAL,
+      resources: MODULE_RESOURCE_TYPE.ISOLATED,
     },
   },
 }
