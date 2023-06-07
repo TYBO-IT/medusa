@@ -11,5 +11,17 @@ export const joinerConfig: JoinerServiceConfig = {
     {
       name: "products",
     },
+    {
+      name: "variant",
+      args: {
+        methodSuffix: "Variants",
+      },
+    },
+    {
+      name: "variants",
+      args: {
+        methodSuffix: "Variants",
+      },
+    },
   ],
 }

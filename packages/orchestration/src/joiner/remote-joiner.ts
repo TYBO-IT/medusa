@@ -126,11 +126,17 @@ export class RemoteJoiner {
           )
         }
 
+        const args =
+          service.args || alias.args
+            ? { ...service.args, ...alias.args }
+            : undefined
+
         service.relationships?.push({
           alias: alias.name,
           foreignKey: alias.name + "_id",
           primaryKey: "id",
           serviceName: service.serviceName,
+          args,
         })
         this.cacheServiceConfig(serviceConfigs, undefined, alias.name)
       }
