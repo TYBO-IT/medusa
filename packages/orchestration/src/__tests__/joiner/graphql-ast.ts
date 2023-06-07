@@ -19,7 +19,7 @@ describe("RemoteJoiner.parseQuery", () => {
     const rjQuery = parser.parseQuery()
 
     expect(rjQuery).toEqual({
-      service: "order",
+      alias: "order",
       fields: ["id", "number", "date"],
       expands: [],
     })
@@ -50,7 +50,7 @@ describe("RemoteJoiner.parseQuery", () => {
     const rjQuery = parser.parseQuery()
 
     expect(rjQuery).toEqual({
-      service: "order",
+      alias: "order",
       fields: ["id", "number", "date"],
       expands: [],
       args: [
@@ -96,15 +96,11 @@ describe("RemoteJoiner.parseQuery", () => {
           }
       }
     `
-    const parser = new GraphQLParser(
-      graphqlQuery,
-      {},
-      new Map([["order", "orderService"]])
-    )
+    const parser = new GraphQLParser(graphqlQuery, {})
     const rjQuery = parser.parseQuery()
 
     expect(rjQuery).toEqual({
-      service: "orderService",
+      alias: "order",
       fields: ["id", "number", "date", "products"],
       expands: [
         {
@@ -142,7 +138,7 @@ describe("RemoteJoiner.parseQuery", () => {
     const rjQuery = parser.parseQuery()
 
     expect(rjQuery).toEqual({
-      service: "order",
+      alias: "order",
       fields: ["id", "number", "date", "products"],
       expands: [
         {
@@ -180,7 +176,7 @@ describe("RemoteJoiner.parseQuery", () => {
     const rjQuery = parser.parseQuery()
 
     expect(rjQuery).toEqual({
-      service: "order",
+      alias: "order",
       fields: ["id", "number", "date", "products"],
       expands: [
         {
@@ -247,7 +243,7 @@ describe("RemoteJoiner.parseQuery", () => {
     const rjQuery = parser.parseQuery()
 
     expect(rjQuery).toEqual({
-      service: "order",
+      alias: "order",
       fields: ["id", "number", "date", "products"],
       expands: [
         {

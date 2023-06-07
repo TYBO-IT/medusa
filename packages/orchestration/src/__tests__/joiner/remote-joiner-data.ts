@@ -45,8 +45,9 @@ const fetchServiceDataCallback = async (
   relationship?: any
 ) => {
   const serviceConfig = expand.serviceConfig
-  const moduleRegistryName =
-    lowerCaseFirst(serviceConfig.serviceName) + "Service"
+  const moduleRegistryName = !serviceConfig.serviceName.endsWith("Service")
+    ? lowerCaseFirst(serviceConfig.serviceName) + "Service"
+    : serviceConfig.serviceName
 
   const service = container.resolve(moduleRegistryName)
   const methodName = relationship?.inverse
@@ -448,6 +449,11 @@ describe("RemoteJoiner", () => {
                       id: 103,
                     },
                   ],
+                  variant: {
+                    id: 993,
+                    name: "Product variant 33",
+                    product_id: 103,
+                  },
                 },
               ],
               id: 205,
@@ -478,6 +484,11 @@ describe("RemoteJoiner", () => {
                     id: 103,
                   },
                 ],
+                variant: {
+                  id: 993,
+                  name: "Product variant 33",
+                  product_id: 103,
+                },
               },
             ],
             id: 205,

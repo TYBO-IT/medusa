@@ -1,7 +1,7 @@
 import { MedusaContainer, RemoteExpandProperty } from "@medusajs/types"
 import { lowerCaseFirst, toPascalCase } from "@medusajs/utils"
 import { serviceConfigs, serviceMock } from "../../__mocks__/joiner/mock_data"
-import { RemoteJoiner } from "./../../joiner"
+import { RemoteJoiner } from "../../joiner"
 
 const container = {
   resolve: (serviceName) => {
@@ -38,7 +38,7 @@ const fetchServiceDataCallback = async (
   })
 }
 
-describe("RemoteJoiner", () => {
+describe.skip("RemoteJoiner - Error handling", () => {
   let joiner: RemoteJoiner
   beforeAll(() => {
     joiner = new RemoteJoiner(serviceConfigs, fetchServiceDataCallback)

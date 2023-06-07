@@ -65,7 +65,6 @@ export type ModuleDefinition = {
   canOverride?: boolean
   isRequired?: boolean
   isQueryable?: boolean // If the modules should be queryable via Remote Joiner
-  queryPropertyName?: string // Name to use when querying the module via Remote Joiner
   dependencies?: string[]
   defaultModuleDeclaration:
     | InternalModuleDeclaration

@@ -4,17 +4,24 @@ export type JoinerRelationship = {
   primaryKey: string
   serviceName: string
   inverse?: boolean // In an inverted relationship the foreign key is on the other service and the primary key is on the current service
-  args?: Record<string, any> & { single?: boolean } // Extra arguments to pass to the remoteFetchData callback
+  args?: Record<string, any> // Extra arguments to pass to the remoteFetchData callback
+}
+
+export interface JoinerServiceConfigAlias {
+  name: string
+  args?: Record<string, any> // Extra arguments to pass to the remoteFetchData callback
 }
 
 export interface JoinerServiceConfig {
   serviceName: string
+  alias?: JoinerServiceConfigAlias | JoinerServiceConfigAlias[] // Property name to use as entrypoint to the service
   primaryKeys: string[]
   relationships?: JoinerRelationship[]
   extends?: {
     serviceName: string
     resolve: JoinerRelationship
   }[]
+  args?: Record<string, any> // Extra arguments to pass to the remoteFetchData callback
 }
 
 export interface JoinerArgument {
@@ -24,7 +31,8 @@ export interface JoinerArgument {
 }
 
 export interface RemoteJoinerQuery {
-  service: string
+  service?: string
+  alias?: string
   expands?: Array<{
     property: string
     fields: string[]

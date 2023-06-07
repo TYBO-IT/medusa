@@ -12,18 +12,6 @@ export enum Modules {
   PRODUCT = "productService",
 }
 
-export enum ModuleQueryProperty {
-  STOCK_LOCATION = "stock_location",
-  INVENTORY = "inventory",
-  PRODUCT = "product",
-}
-
-export const ModuleQueryPropertyMap = new Map<ModuleQueryProperty, Modules>([
-  [ModuleQueryProperty.STOCK_LOCATION, Modules.STOCK_LOCATION],
-  [ModuleQueryProperty.INVENTORY, Modules.INVENTORY],
-  [ModuleQueryProperty.PRODUCT, Modules.PRODUCT],
-])
-
 export const ModulesDefinition: { [key: string]: ModuleDefinition } = {
   [Modules.EVENT_BUS]: {
     key: Modules.EVENT_BUS,
@@ -46,7 +34,6 @@ export const ModulesDefinition: { [key: string]: ModuleDefinition } = {
     isRequired: false,
     canOverride: true,
     isQueryable: true,
-    queryPropertyName: ModuleQueryProperty.STOCK_LOCATION,
     dependencies: ["eventBusService"],
     defaultModuleDeclaration: {
       scope: MODULE_SCOPE.INTERNAL,
@@ -61,7 +48,6 @@ export const ModulesDefinition: { [key: string]: ModuleDefinition } = {
     isRequired: false,
     canOverride: true,
     isQueryable: true,
-    queryPropertyName: ModuleQueryProperty.INVENTORY,
     dependencies: ["eventBusService"],
     defaultModuleDeclaration: {
       scope: MODULE_SCOPE.INTERNAL,
@@ -88,7 +74,6 @@ export const ModulesDefinition: { [key: string]: ModuleDefinition } = {
     isRequired: false,
     canOverride: true,
     isQueryable: true,
-    queryPropertyName: ModuleQueryProperty.PRODUCT,
     dependencies: [],
     defaultModuleDeclaration: {
       scope: MODULE_SCOPE.INTERNAL,

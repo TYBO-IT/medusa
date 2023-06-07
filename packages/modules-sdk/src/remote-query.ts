@@ -6,7 +6,6 @@ import {
   RemoteExpandProperty,
 } from "@medusajs/types"
 import { toPascalCase } from "@medusajs/utils"
-import { ModuleQueryPropertyMap } from "./definitions"
 import { MedusaModule } from "./medusa-module"
 
 export class RemoteQuery {
@@ -99,11 +98,14 @@ export class RemoteQuery {
   }> {
     const serviceConfig = expand.serviceConfig
     const service = this.modulesMap.get(serviceConfig.serviceName)
-    const methodName = relationship?.inverse
-      ? `getBy${toPascalCase(keyField)}`
-      : relationship?.args?.single
-      ? "retrieve"
-      : "list"
+
+    let methodName = "list"
+
+    if (relationship?.args?.methodSuffix) {
+      methodName += toPascalCase(relationship.args.methodSuffix)
+    } else if (serviceConfig?.args?.methodSuffix) {
+      methodName += toPascalCase(serviceConfig.args.methodSuffix)
+    }
 
     if (typeof service[methodName] !== "function") {
       throw new Error(
@@ -143,7 +145,7 @@ export class RemoteQuery {
 
   public async query(query: string, variables: any = {}): Promise<any> {
     return await this.remoteJoiner.query(
-      RemoteJoiner.parseQuery(query, variables, ModuleQueryPropertyMap)
+      RemoteJoiner.parseQuery(query, variables)
     )
   }
 }

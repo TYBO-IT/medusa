@@ -5,6 +5,20 @@ export const serviceConfigs: JoinerServiceConfig[] = [
   {
     serviceName: "user",
     primaryKeys: ["id"],
+    args: {
+      methodSuffix: "User",
+    },
+    alias: [
+      {
+        name: "me",
+        args: {
+          extraArgument: 123,
+        },
+      },
+      {
+        name: "customer",
+      },
+    ],
     relationships: [
       {
         foreignKey: "products.product_id",
@@ -15,7 +29,7 @@ export const serviceConfigs: JoinerServiceConfig[] = [
     ],
     extends: [
       {
-        serviceName: "variant",
+        serviceName: "variantService",
         resolve: {
           foreignKey: "user_id",
           serviceName: "user",
@@ -38,7 +52,10 @@ export const serviceConfigs: JoinerServiceConfig[] = [
     ],
   },
   {
-    serviceName: "variant",
+    serviceName: "variantService",
+    alias: {
+      name: "variant",
+    },
     primaryKeys: ["id"],
     relationships: [
       {
@@ -68,7 +85,7 @@ export const serviceConfigs: JoinerServiceConfig[] = [
       },
       {
         foreignKey: "products.variant_id,product_id",
-        serviceName: "variant",
+        serviceName: "variantService",
         primaryKey: "id,product_id",
         alias: "variant",
       },

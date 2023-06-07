@@ -4,4 +4,12 @@ import { JoinerServiceConfig } from "@medusajs/types"
 export const joinerConfig: JoinerServiceConfig = {
   serviceName: Modules.PRODUCT,
   primaryKeys: ["id", "handle"],
+  alias: [
+    {
+      name: "product",
+    },
+    {
+      name: "products",
+    },
+  ],
 }

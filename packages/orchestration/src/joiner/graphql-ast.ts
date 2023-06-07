@@ -24,11 +24,7 @@ interface Entity {
 class GraphQLParser {
   private ast: DocumentNode
 
-  constructor(
-    input: string,
-    private variables?: { [key: string]: unknown },
-    private fieldToServiceMap?: Map<string, string>
-  ) {
+  constructor(input: string, private variables?: { [key: string]: unknown }) {
     this.ast = parse(input)
     this.variables = variables || {}
   }
@@ -131,12 +127,9 @@ class GraphQLParser {
     const rootFieldNode = queryDefinition.selectionSet
       .selections[0] as FieldNode
 
-    const propName = this.fieldToServiceMap?.has(rootFieldNode.name.value)
-      ? this.fieldToServiceMap.get(rootFieldNode.name.value)!
-      : rootFieldNode.name.value
-
+    const propName = rootFieldNode.name.value
     const remoteJoinConfig: RemoteJoinerQuery = {
-      service: propName,
+      alias: propName,
       fields: [],
       expands: [],
     }

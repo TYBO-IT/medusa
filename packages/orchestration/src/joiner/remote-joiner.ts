@@ -1,6 +1,7 @@
 import {
   JoinerRelationship,
   JoinerServiceConfig,
+  JoinerServiceConfigAlias,
   RemoteExpandProperty,
   RemoteJoinerQuery,
   RemoteNestedExpands,
@@ -78,12 +79,8 @@ export class RemoteJoiner {
     }, {})
   }
 
-  static parseQuery(
-    graphqlQuery: string,
-    variables?: any,
-    fieldToServiceMap?: Map<string, string>
-  ): RemoteJoinerQuery {
-    const parser = new GraphQLParser(graphqlQuery, variables, fieldToServiceMap)
+  static parseQuery(graphqlQuery: string, variables?: any): RemoteJoinerQuery {
+    const parser = new GraphQLParser(graphqlQuery, variables)
     return parser.parseQuery()
   }
 
@@ -105,20 +102,40 @@ export class RemoteJoiner {
   private buildReferences(serviceConfigs: JoinerServiceConfig[]) {
     const expandedRelationships: Map<string, JoinerRelationship[]> = new Map()
     for (const service of serviceConfigs) {
-      // self-reference
-      const propName = service.serviceName.toLowerCase()
+      if (this.serviceConfigCache.has(service.serviceName)) {
+        throw new Error(`Service "${service.serviceName}" is already defined.`)
+      }
+
       if (!service.relationships) {
         service.relationships = []
       }
 
-      service.relationships?.push({
-        alias: propName,
-        foreignKey: propName + "_id",
-        primaryKey: "id",
-        serviceName: service.serviceName,
-      })
+      // add aliases
+      if (!service.alias) {
+        service.alias = [{ name: service.serviceName.toLowerCase() }]
+      } else if (!Array.isArray(service.alias)) {
+        service.alias = [service.alias]
+      }
 
-      this.serviceConfigCache.set(service.serviceName, service)
+      // self-reference
+      for (const alias of service.alias) {
+        if (this.serviceConfigCache.has(`alias_${alias.name}}`)) {
+          const defined = this.serviceConfigCache.get(`alias_${alias.name}}`)
+          throw new Error(
+            `Cannot add alias "${alias.name}" for "${service.serviceName}". It is already defined for Service "${defined?.serviceName}".`
+          )
+        }
+
+        service.relationships?.push({
+          alias: alias.name,
+          foreignKey: alias.name + "_id",
+          primaryKey: "id",
+          serviceName: service.serviceName,
+        })
+        this.cacheServiceConfig(serviceConfigs, undefined, alias.name)
+      }
+
+      this.cacheServiceConfig(serviceConfigs, service.serviceName)
 
       if (!service.extends) {
         continue
@@ -135,7 +152,7 @@ export class RemoteJoiner {
 
     for (const [serviceName, relationships] of expandedRelationships) {
       if (!this.serviceConfigCache.has(serviceName)) {
-        throw new Error(`Service ${serviceName} not found`)
+        throw new Error(`Service "${serviceName}" was not found`)
       }
 
       const service = this.serviceConfigCache.get(serviceName)
@@ -145,16 +162,49 @@ export class RemoteJoiner {
     return serviceConfigs
   }
 
-  private findServiceConfig(
-    serviceName: string
+  private getServiceConfig(
+    serviceName?: string,
+    serviceAlias?: string
   ): JoinerServiceConfig | undefined {
-    if (!this.serviceConfigCache.has(serviceName)) {
-      const config = this.serviceConfigs.find(
-        (config) => config.serviceName === serviceName
-      )
-      this.serviceConfigCache.set(serviceName, config!)
+    if (serviceAlias) {
+      const name = `alias_${serviceAlias}`
+      return this.serviceConfigCache.get(name)
     }
-    return this.serviceConfigCache.get(serviceName)
+
+    return this.serviceConfigCache.get(serviceName!)
+  }
+
+  private cacheServiceConfig(
+    serviceConfigs,
+    serviceName?: string,
+    serviceAlias?: string
+  ): void {
+    if (serviceAlias) {
+      const name = `alias_${serviceAlias}`
+      if (!this.serviceConfigCache.has(name)) {
+        let aliasConfig: JoinerServiceConfigAlias | undefined
+        const config = serviceConfigs.find((conf) => {
+          const aliases = conf.alias as JoinerServiceConfigAlias[]
+          const hasArgs = aliases?.find((alias) => alias.name === serviceAlias)
+          aliasConfig = hasArgs
+          return hasArgs
+        })
+
+        if (config) {
+          const serviceConfig = { ...config }
+          if (aliasConfig) {
+            serviceConfig.args = { ...config?.args, ...aliasConfig?.args }
+          }
+          this.serviceConfigCache.set(name, serviceConfig)
+        }
+      }
+      return
+    }
+
+    const config = serviceConfigs.find(
+      (config) => config.serviceName === serviceName
+    )
+    this.serviceConfigCache.set(serviceName!, config)
   }
 
   private async fetchData(
@@ -249,7 +299,10 @@ export class RemoteJoiner {
         resolvedPaths.add(expandedPath)
 
         const property = expand.property || ""
-        const parentServiceConfig = this.findServiceConfig(currentQuery.service)
+        const parentServiceConfig = this.getServiceConfig(
+          currentQuery.service,
+          currentQuery.alias
+        )
 
         await this.expandProperty(currentItems, parentServiceConfig!, expand)
 
@@ -443,9 +496,7 @@ export class RemoteJoiner {
             }
           }
 
-          currentServiceConfig = this.findServiceConfig(
-            relationship.serviceName
-          )
+          currentServiceConfig = this.getServiceConfig(relationship.serviceName)
 
           if (!currentServiceConfig) {
             throw new Error(
@@ -526,10 +577,17 @@ export class RemoteJoiner {
   }
 
   async query(queryObj: RemoteJoinerQuery): Promise<any> {
-    const serviceConfig = this.findServiceConfig(queryObj.service)
+    const serviceConfig = this.getServiceConfig(
+      queryObj.service,
+      queryObj.alias
+    )
 
     if (!serviceConfig) {
-      throw new Error(`Service not found: ${queryObj.service}`)
+      if (queryObj.alias) {
+        throw new Error(`Service with alias "${queryObj.alias}" was not found.`)
+      }
+
+      throw new Error(`Service "${queryObj.service}" was not found.`)
     }
 
     let pkName = serviceConfig.primaryKeys[0]
