@@ -40,6 +40,11 @@ export class MedusaModule {
   > {
     return MedusaModule.instances_
   }
+
+  public static clearInstances(): void {
+    MedusaModule.instances_.clear()
+  }
+
   public static async bootstrap<T>(
     moduleKey: string,
     defaultPath: string,

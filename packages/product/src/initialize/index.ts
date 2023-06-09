@@ -2,11 +2,13 @@ import {
   ExternalModuleDeclaration,
   InternalModuleDeclaration,
   MedusaModule,
+  MODULE_PACKAGE_NAMES,
   Modules,
 } from "@medusajs/modules-sdk"
-import { IEventBusService, IProductService } from "@medusajs/types"
+import { IProductModuleService } from "@medusajs/types"
 import { moduleDefinition } from "../module-definition"
 import {
+  InitializeModuleInjectableDependencies,
   ProductServiceInitializeCustomDataLayerOptions,
   ProductServiceInitializeOptions,
 } from "../types"
@@ -16,19 +18,17 @@ export const initialize = async (
     | ProductServiceInitializeOptions
     | ProductServiceInitializeCustomDataLayerOptions
     | ExternalModuleDeclaration,
-  injectedDependencies?: {
-    eventBusService?: IEventBusService
-  }
-): Promise<IProductService> => {
+  injectedDependencies?: InitializeModuleInjectableDependencies
+): Promise<IProductModuleService> => {
   const serviceKey = Modules.PRODUCT
 
-  const loaded = await MedusaModule.bootstrap<IProductService>(
+  const loaded = await MedusaModule.bootstrap(
     serviceKey,
-    "@medusajs/product",
+    MODULE_PACKAGE_NAMES[Modules.PRODUCT],
     options as InternalModuleDeclaration | ExternalModuleDeclaration,
     moduleDefinition,
     injectedDependencies
   )
 
-  return loaded[serviceKey]
+  return loaded[serviceKey] as IProductModuleService
 }

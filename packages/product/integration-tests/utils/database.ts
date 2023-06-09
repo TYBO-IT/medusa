@@ -1,13 +1,21 @@
-import { databaseOptions } from "./config"
-import * as ProductModels from "@models"
-import { MikroORM, Options, SqlEntityManager } from "@mikro-orm/postgresql"
 import { TSMigrationGenerator } from "@mikro-orm/migrations"
+import { MikroORM, Options, SqlEntityManager } from "@mikro-orm/postgresql"
+import * as ProductModels from "@models"
+import * as process from "process"
+
+const DB_HOST = process.env.DB_HOST ?? "localhost"
+const DB_USERNAME = process.env.DB_USERNAME ?? ""
+const DB_PASSWORD = process.env.DB_PASSWORD
+const DB_NAME = process.env.DB_TEMP_NAME
+export const DB_URL = `postgres://${DB_USERNAME}${
+  DB_PASSWORD ? `:${DB_PASSWORD}` : ""
+}@${DB_HOST}/${DB_NAME}`
 
 const ORMConfig: Options = {
   type: "postgresql",
-  dbName: databaseOptions!.clientUrl,
+  clientUrl: DB_URL,
   entities: Object.values(ProductModels),
-  schema: databaseOptions!.schema,
+  schema: process.env.MEDUSA_PRODUCT_DB_SCHEMA,
   debug: false,
   migrations: {
     path: "../../src/migrations",
@@ -39,7 +47,7 @@ export const TestDatabase: TestDatabase = {
 
   getManager() {
     if (this.manager === null) {
-      throw "manager entity not available"
+      throw new Error("manager entity not available")
     }
 
     return this.manager
@@ -47,7 +55,7 @@ export const TestDatabase: TestDatabase = {
 
   async forkManager() {
     if (this.manager === null) {
-      throw "manager entity not available"
+      throw new Error("manager entity not available")
     }
 
     return await this.manager.fork()
@@ -55,7 +63,7 @@ export const TestDatabase: TestDatabase = {
 
   getORM() {
     if (this.orm === null) {
-      throw "orm entity not available"
+      throw new Error("orm entity not available")
     }
 
     return this.orm
@@ -66,20 +74,17 @@ export const TestDatabase: TestDatabase = {
     this.orm = await MikroORM.init(ORMConfig)
 
     if (this.orm === null) {
-      throw "ORM not configured"
+      throw new Error("ORM not configured")
     }
 
     this.manager = await this.orm.em
 
-    // ensure the database exists
-    // drop the schema if exists
-    // create the schema from scratch
-    await this.orm.schema.refreshDatabase()
+    await this.orm.schema.refreshDatabase() // ensure db exists and is fresh
   },
 
   async clearDatabase() {
     if (this.orm === null) {
-      throw "ORM not configured"
+      throw new Error("ORM not configured")
     }
 
     await this.orm.close()

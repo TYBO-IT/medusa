@@ -6,8 +6,9 @@ import {
   ModuleExports,
   ModuleResolution,
 } from "@medusajs/types"
-import MODULE_DEFINITIONS from "../definitions"
+import { isObject } from "@medusajs/utils"
 import resolveCwd from "resolve-cwd"
+import MODULE_DEFINITIONS from "../definitions"
 
 export const registerModules = (
   modules?: Record<
@@ -22,11 +23,16 @@ export const registerModules = (
 
   for (const definition of MODULE_DEFINITIONS) {
     const customConfig = projectModules[definition.key]
-    const isObj = typeof customConfig === "object"
 
+    const canSkip =
+      !customConfig && !definition.isRequired && !definition.defaultPackage
+
+    const isObj = isObject(customConfig)
     if (isObj && customConfig.scope === MODULE_SCOPE.EXTERNAL) {
       // TODO: getExternalModuleResolution(...)
-      throw new Error("External Modules are not supported yet.")
+      if (!canSkip) {
+        throw new Error("External Modules are not supported yet.")
+      }
     }
 
     moduleResolutions[definition.key] = getInternalModuleResolution(

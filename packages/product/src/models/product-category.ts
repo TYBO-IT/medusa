@@ -1,3 +1,4 @@
+import { generateEntityId, kebabCase } from "@medusajs/utils"
 import {
   BeforeCreate,
   Collection,
@@ -9,8 +10,8 @@ import {
   OneToMany,
   PrimaryKey,
   Property,
+  Unique,
 } from "@mikro-orm/core"
-import { generateEntityId, kebabCase } from "@medusajs/utils"
 
 import Product from "./product"
 
@@ -25,10 +26,9 @@ class ProductCategory {
   @Property({ columnType: "text", default: "", nullable: false })
   description?: string
 
-  @Index({
+  @Unique({
     name: "IDX_product_category_handle",
     properties: ["handle"],
-    expression: `CREATE UNIQUE INDEX "IDX_product_category_handle" ON "product_category" ("handle")`,
   })
   @Property({ columnType: "text", nullable: false })
   handle?: string
@@ -36,10 +36,8 @@ class ProductCategory {
   @Index({
     name: "IDX_product_category_path",
     properties: ["mpath"],
-    expression: `CREATE INDEX "IDX_product_category_path" ON "product_category" ("mpath")`,
   })
-  // TODO: mpath shouldn't be nullable, remove this when mpath is processed before create
-  @Property({ columnType: "text", nullable: true })
+  @Property({ columnType: "text", nullable: false })
   mpath?: string
 
   @Property({ columnType: "boolean", default: false })

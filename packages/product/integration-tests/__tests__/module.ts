@@ -1,11 +1,11 @@
+import { MedusaModule } from "@medusajs/modules-sdk"
 import { Product } from "@models"
 import { initialize } from "../../src"
 import * as CustomRepositories from "../__fixtures__/module"
 import { ProductRepository } from "../__fixtures__/module"
 import { createProductAndTags } from "../__fixtures__/product"
 import { productsData } from "../__fixtures__/product/data"
-import { databaseOptions, TestDatabase } from "../utils"
-import { MedusaModule } from "@medusajs/modules-sdk"
+import { DB_URL, TestDatabase } from "../utils"
 
 const beforeEach_ = async () => {
   await TestDatabase.setupDatabase()
@@ -23,17 +23,12 @@ describe("Product module", function () {
 
     beforeEach(async () => {
       const testManager = await beforeEach_()
-
       products = await createProductAndTags(testManager, productsData)
 
       module = await initialize({
         database: {
-          clientUrl: `postgres://postgres@localhost:5432/${
-            databaseOptions!.clientUrl
-          }`,
-          driverOptions: {
-            connection: { ssl: false },
-          },
+          clientUrl: DB_URL,
+          schema: process.env.MEDUSA_PRODUCT_DB_SCHEMA,
         },
       })
     })
@@ -61,12 +56,8 @@ describe("Product module", function () {
 
       module = await initialize({
         database: {
-          clientUrl: `postgres://postgres@localhost:5432/${
-            databaseOptions!.clientUrl
-          }`,
-          driverOptions: {
-            connection: { ssl: false },
-          },
+          clientUrl: DB_URL,
+          schema: process.env.MEDUSA_PRODUCT_DB_SCHEMA,
         },
         repositories: CustomRepositories,
       })
@@ -86,15 +77,15 @@ describe("Product module", function () {
     })
   })
 
-  describe.only("Using custom data access layer and connection", function () {
+  describe("Using custom data access layer and connection", function () {
     let module
     let products: Product[]
 
     beforeEach(async () => {
       const testManager = await beforeEach_()
-      ;(MedusaModule as any).instances_.clear()
-
       products = await createProductAndTags(testManager, productsData)
+
+      MedusaModule.clearInstances()
 
       module = await initialize({
         manager: testManager,
@@ -104,7 +95,7 @@ describe("Product module", function () {
 
     afterEach(afterEach_)
 
-    it("should initialize", async () => {
+    it("should initialize and return a list of product", async () => {
       expect(module).toBeDefined()
     })
 

@@ -1,20 +1,20 @@
-import { TestDatabase } from "../../../utils"
+import { ProductDTO } from "@medusajs/types"
+import { SqlEntityManager } from "@mikro-orm/postgresql"
+import { Product, ProductCategory, ProductVariant } from "@models"
+import { ProductRepository } from "@repositories"
 import {
   ProductService,
   ProductTagService,
   ProductVariantService,
 } from "@services"
-import { ProductRepository } from "@repositories"
-import { Product, ProductCategory, ProductVariant } from "@models"
-import { SqlEntityManager } from "@mikro-orm/postgresql"
-import { ProductDTO } from "@medusajs/types"
+import { TestDatabase } from "../../../utils"
 
-import { createProductCategories } from "../../../__fixtures__/product-category"
 import {
   assignCategoriesToProduct,
   createProductAndTags,
   createProductVariants,
 } from "../../../__fixtures__/product"
+import { createProductCategories } from "../../../__fixtures__/product-category"
 import {
   categoriesData,
   productsData,
@@ -27,6 +27,8 @@ const productVariantService = {
 const productTagService = {
   list: jest.fn(),
 } as unknown as ProductTagService
+
+jest.setTimeout(30000)
 
 describe("Product Service", () => {
   let service: ProductService
@@ -123,7 +125,10 @@ describe("Product Service", () => {
         products = await createProductAndTags(testManager, productsData)
         workingProduct = products.find((p) => p.id === "test-1") as Product
         categories = await createProductCategories(testManager, categoriesData)
-        workingCategory = await testManager.findOne(ProductCategory, "category-1") as ProductCategory
+        workingCategory = (await testManager.findOne(
+          ProductCategory,
+          "category-1"
+        )) as ProductCategory
 
         workingProduct = await assignCategoriesToProduct(
           testManager,

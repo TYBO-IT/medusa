@@ -9,7 +9,7 @@ export enum Modules {
   STOCK_LOCATION = "stockLocationService",
   INVENTORY = "inventoryService",
   CACHE = "cacheService",
-  PRODUCT = "productService",
+  PRODUCT = "productModuleService",
 }
 
 export const ModulesDefinition: { [key: string]: ModuleDefinition } = {
@@ -68,21 +68,24 @@ export const ModulesDefinition: { [key: string]: ModuleDefinition } = {
   },
   [Modules.PRODUCT]: {
     key: Modules.PRODUCT,
-    registrationName: "productService",
+    registrationName: Modules.PRODUCT,
     defaultPackage: false,
-    label: "ProductService",
+    label: "ProductModuleService",
     isRequired: false,
     canOverride: true,
     isQueryable: true,
     dependencies: [],
     defaultModuleDeclaration: {
-      scope: MODULE_SCOPE.INTERNAL,
-      resources: MODULE_RESOURCE_TYPE.ISOLATED,
+      scope: MODULE_SCOPE.EXTERNAL,
     },
   },
 }
 
 export const MODULE_DEFINITIONS: ModuleDefinition[] =
   Object.values(ModulesDefinition)
+
+export const MODULE_PACKAGE_NAMES = {
+  [Modules.PRODUCT]: "@medusajs/product",
+}
 
 export default MODULE_DEFINITIONS

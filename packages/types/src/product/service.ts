@@ -2,21 +2,24 @@ import { FindConfig } from "../common"
 import { JoinerServiceConfig } from "../joiner"
 import { SharedContext } from "../shared-context"
 import {
+  FilterableProductCategoryProps,
   FilterableProductCollectionProps,
   FilterableProductProps,
   FilterableProductTagProps,
   FilterableProductVariantProps,
+  ProductCategoryDTO,
   ProductCollectionDTO,
   ProductDTO,
   ProductTagDTO,
   ProductVariantDTO,
 } from "./common"
 
-export interface IProductService<
+export interface IProductModuleService<
   TProduct = any,
   TProductVariant = any,
   TProductTag = any,
-  TProductCollection = any
+  TProductCollection = any,
+  TProductCategory = any
 > {
   __joinerConfig(): JoinerServiceConfig
   list(
@@ -48,4 +51,10 @@ export interface IProductService<
     config?: FindConfig<ProductCollectionDTO>,
     context?: SharedContext
   ): Promise<ProductCollectionDTO[]>
+
+  listCategories(
+    filters: FilterableProductCategoryProps,
+    config?: FindConfig<ProductCategoryDTO>,
+    sharedContext?: SharedContext
+  ): Promise<ProductCategoryDTO[]>
 }

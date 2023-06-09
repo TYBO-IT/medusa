@@ -1,17 +1,17 @@
-import { TestDatabase } from "../../../utils"
-import { ProductVariantService } from "@services"
-import { ProductVariantRepository } from "@repositories"
-import { Product, ProductTag, ProductVariant } from "@models"
-import { SqlEntityManager } from "@mikro-orm/postgresql"
-import { Collection } from "@mikro-orm/core"
-import { ProductTypes } from "@medusajs/types"
 import { ProductOption } from "@medusajs/client-types"
+import { ProductTypes } from "@medusajs/types"
+import { Collection } from "@mikro-orm/core"
+import { SqlEntityManager } from "@mikro-orm/postgresql"
+import { Product, ProductTag, ProductVariant } from "@models"
+import { ProductVariantRepository } from "@repositories"
+import { ProductVariantService } from "@services"
 import {
   createOptions,
   createProductAndTags,
   createProductVariants,
 } from "../../../__fixtures__/product"
 import { productsData, variantsData } from "../../../__fixtures__/product/data"
+import { TestDatabase } from "../../../utils"
 
 describe("ProductVariant Service", () => {
   let service: ProductVariantService
@@ -104,22 +104,23 @@ describe("ProductVariant Service", () => {
       )
 
       expect(results).toEqual([
-        {
+        expect.objectContaining({
           id: "test-1",
           title: "variant 1",
-          product: {
+          product: expect.objectContaining({
             id: "product-1",
             title: "product 1",
             tags: expect.any(Collection<ProductTag>),
             variants: expect.any(Collection<ProductVariant>),
-          },
-        },
+          }),
+        }),
       ])
 
       expect(JSON.parse(JSON.stringify(results))).toEqual([
         {
           id: "test-1",
           title: "variant 1",
+          product_id: "product-1",
           product: {
             id: "product-1",
             title: "product 1",

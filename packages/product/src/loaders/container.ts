@@ -1,26 +1,28 @@
 import { LoaderOptions } from "@medusajs/modules-sdk"
 
-import { asClass } from "awilix"
+import { Constructor, DAL } from "@medusajs/types"
+import { lowerCaseFirst } from "@medusajs/utils"
+import * as DefaultRepositories from "@repositories"
 import {
-  GatewayService,
+  ProductCategoryRepository,
+  ProductCollectionRepository,
+  ProductRepository,
+  ProductTagRepository,
+  ProductVariantRepository,
+} from "@repositories"
+import {
+  ProductCategoryService,
+  ProductCollectionService,
+  ProductModuleService,
   ProductService,
   ProductTagService,
   ProductVariantService,
 } from "@services"
-import * as DefaultRepositories from "@repositories"
-import {
-  ProductCollectionRepository,
-  ProductRepository,
-  ProductTagRepository,
-  ProductCategoryRepository,
-  ProductVariantRepository,
-} from "@repositories"
+import { asClass } from "awilix"
 import {
   ProductServiceInitializeCustomDataLayerOptions,
   ProductServiceInitializeOptions,
 } from "../types"
-import { Constructor, DAL } from "@medusajs/types"
-import { lowerCaseFirst } from "@medusajs/utils"
 
 export default async ({
   container,
@@ -34,10 +36,12 @@ export default async ({
   )?.repositories
 
   container.register({
-    gatewayService: asClass(GatewayService).singleton(),
+    productModuleService: asClass(ProductModuleService).singleton(),
     productService: asClass(ProductService).singleton(),
+    productCategoryService: asClass(ProductCategoryService).singleton(),
     productVariantService: asClass(ProductVariantService).singleton(),
     productTagService: asClass(ProductTagService).singleton(),
+    productCollectionService: asClass(ProductCollectionService).singleton(),
   })
 
   if (customRepositories) {

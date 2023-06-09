@@ -1,20 +1,19 @@
+import { generateEntityId } from "@medusajs/utils"
 import {
   BeforeCreate,
   Cascade,
   Collection,
   Entity,
-  Index,
   ManyToOne,
   OneToMany,
   OptionalProps,
   PrimaryKey,
   Property,
+  Unique,
 } from "@mikro-orm/core"
-import { generateEntityId } from "@medusajs/utils"
 import { Product } from "@models"
 import ProductOptionValue from "./product-option-value"
 
-// type OptionalRelations = 'product'
 type OptionalFields =
   | "created_at"
   | "updated_at"
@@ -22,7 +21,8 @@ type OptionalFields =
   | "deleted_at"
   | "allow_backorder"
   | "manage_inventory"
-  | "productss"
+  | "product"
+  | "product_id"
 
 @Entity({ tableName: "product_variant" })
 class ProductVariant {
@@ -35,42 +35,30 @@ class ProductVariant {
   title: string
 
   @Property({ columnType: "text", nullable: true })
-  @Index({
+  @Unique({
     name: "IDX_product_variant_sku_unique",
     properties: ["sku"],
-    expression:
-      "CREATE UNIQUE INDEX IF NOT EXISTS IDX_product_variant_sku_unique ON product_variant (sku) WHERE deleted_at IS NULL",
   })
   sku?: string | null
 
-  /*  @Index({ name: "IDX_product_variant_product_id" })
-  @Property({ columnType: "text" })
-  product_id: string*/
-
   @Property({ columnType: "text", nullable: true })
-  @Index({
-    name: "IDX_product_variant_sku_unique",
+  @Unique({
+    name: "IDX_product_variant_barcode_unique",
     properties: ["barcode"],
-    expression:
-      "CREATE UNIQUE INDEX IF NOT EXISTS IDX_product_variant_barcode_unique ON product_variant (barcode) WHERE deleted_at IS NULL",
   })
   barcode?: string | null
 
   @Property({ columnType: "text", nullable: true })
-  @Index({
-    name: "IDX_product_variant_sku_unique",
+  @Unique({
+    name: "IDX_product_variant_ean_unique",
     properties: ["ean"],
-    expression:
-      "CREATE UNIQUE INDEX IF NOT EXISTS IDX_product_variant_ean_unique ON product_variant (ean) WHERE deleted_at IS NULL",
   })
   ean?: string | null
 
   @Property({ columnType: "text", nullable: true })
-  @Index({
-    name: "IDX_product_variant_sku_unique",
+  @Unique({
+    name: "IDX_product_variant_upc_unique",
     properties: ["upc"],
-    expression:
-      "CREATE UNIQUE INDEX IF NOT EXISTS IDX_product_variant_upc_unique ON product_variant (upc) WHERE deleted_at IS NULL",
   })
   upc?: string | null
 
@@ -116,6 +104,9 @@ class ProductVariant {
   @Property({ columnType: "numeric", nullable: true })
   variant_rank?: number | null
 
+  @Property({ persist: false })
+  product_id!: string
+
   @Property({ onCreate: () => new Date(), columnType: "timestamptz" })
   created_at: Date
 
@@ -126,35 +117,20 @@ class ProductVariant {
   })
   updated_at: Date
 
-  /**
-   * Soft deleted will be an update of the record which set the deleted_at to new Date()
-   */
   @Property({ columnType: "timestamptz", nullable: true })
   deleted_at: Date
 
   @ManyToOne(() => Product, {
     onDelete: "cascade",
+    index: "IDX_product_variant_product_id_index",
+    fieldName: "product_id",
   })
   product!: Product
-
-  // @OneToMany(() => MoneyAmount, (ma) => ma.variant, {
-  //   cascade: [ "persist", "remove" ],
-  // })
-  // prices = new Collection<MoneyAmount>(this)
 
   @OneToMany(() => ProductOptionValue, (optionValue) => optionValue.variant, {
     cascade: [Cascade.PERSIST, Cascade.REMOVE],
   })
   options = new Collection<ProductOptionValue>(this)
-
-  // @OneToMany(
-  //   () => ProductVariantInventoryItem,
-  //   (inventoryItem) => inventoryItem.variant,
-  //   {
-  //     cascade: ["soft-remove", "remove"],
-  //   }
-  // )
-  // inventory_items = new Collection<ProductVariantInventoryItem>(this)
 
   @BeforeCreate()
   onCreate() {

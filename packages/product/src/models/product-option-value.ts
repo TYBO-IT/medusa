@@ -1,3 +1,4 @@
+import { generateEntityId } from "@medusajs/utils"
 import {
   BeforeCreate,
   Entity,
@@ -5,10 +6,9 @@ import {
   PrimaryKey,
   Property,
 } from "@mikro-orm/core"
-import { generateEntityId } from "@medusajs/utils"
 
-import ProductOption from "./product-option"
 import { ProductVariant } from "./index"
+import ProductOption from "./product-option"
 
 @Entity({ tableName: "product_option_value" })
 class ProductOptionValue {
@@ -29,9 +29,6 @@ class ProductOptionValue {
   @Property({ columnType: "jsonb", nullable: true })
   metadata?: Record<string, unknown> | null
 
-  /**
-   * Soft deleted will be an update of the record which set the deleted_at to new Date()
-   */
   @Property({ columnType: "timestamptz", nullable: true })
   deleted_at: Date
 

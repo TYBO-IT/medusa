@@ -1,5 +1,5 @@
-import { ProductCollection } from "@models"
 import { DAL, FindConfig, ProductTypes, SharedContext } from "@medusajs/types"
+import { ProductCollection } from "@models"
 import { buildQuery } from "../utils"
 
 type InjectedDependencies = {
@@ -23,11 +23,6 @@ export default class ProductCollectionService<TEntity = ProductCollection> {
 
     if (filters.title) {
       queryOptions.where["title"] = { $like: filters.title }
-    }
-
-    // TODO: remove
-    if (filters.id) {
-      queryOptions.where["id"] = filters.id
     }
 
     return await this.productCollectionRepository_.find(queryOptions)

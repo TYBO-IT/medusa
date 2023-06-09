@@ -3,23 +3,23 @@ import {
   Collection,
   Entity,
   Enum,
-  Index,
   ManyToMany,
   ManyToOne,
   OneToMany,
   OptionalProps,
   PrimaryKey,
   Property,
+  Unique,
 } from "@mikro-orm/core"
 
-import { generateEntityId, kebabCase } from "@medusajs/utils"
 import { ProductTypes } from "@medusajs/types"
-import ProductTag from "./product-tag"
+import { generateEntityId, kebabCase } from "@medusajs/utils"
+import ProductCategory from "./product-category"
 import ProductCollection from "./product-collection"
+import ProductOption from "./product-option"
+import ProductTag from "./product-tag"
 import ProductType from "./product-type"
 import ProductVariant from "./product-variant"
-import ProductOption from "./product-option"
-import ProductCategory from "./product-category"
 
 type OptionalRelations = "collection" | "type"
 type OptionalFields =
@@ -40,11 +40,9 @@ class Product {
   title: string
 
   @Property({ columnType: "text" })
-  @Index({
+  @Unique({
     name: "IDX_product_handle_unique",
     properties: ["handle"],
-    expression:
-      "CREATE UNIQUE INDEX IF NOT EXISTS IDX_product_handle_unique ON product (handle) WHERE deleted_at IS NULL",
   })
   handle?: string | null
 
@@ -60,6 +58,7 @@ class Product {
   @Enum(() => ProductTypes.ProductStatus)
   status!: ProductTypes.ProductStatus
 
+  // TODO: add images model
   // images: Image[]
 
   @Property({ columnType: "text", nullable: true })
@@ -98,12 +97,16 @@ class Product {
   @ManyToOne(() => ProductCollection, { nullable: true })
   collection!: ProductCollection
 
-  @ManyToOne(() => ProductType, { nullable: true })
+  @ManyToOne(() => ProductType, {
+    nullable: true,
+    index: "IDX_product_type_id",
+  })
   type!: ProductType
 
   @ManyToMany(() => ProductTag, "products", {
     owner: true,
     pivotTable: "product_tags",
+    index: "IDX_product_tag_id",
   })
   tags = new Collection<ProductTag>(this)
 
@@ -129,9 +132,6 @@ class Product {
   })
   updated_at: Date
 
-  /**
-   * Soft deleted will be an update of the record which set the deleted_at to new Date()
-   */
   @Property({ columnType: "timestamptz", nullable: true })
   deleted_at: Date
 
