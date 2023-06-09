@@ -30,7 +30,7 @@ export const serviceConfigs: JoinerServiceConfig[] = [
     extends: [
       {
         serviceName: "variantService",
-        resolve: {
+        relationship: {
           foreignKey: "user_id",
           serviceName: "user",
           primaryKey: "id",

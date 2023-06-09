@@ -19,7 +19,7 @@ export interface JoinerServiceConfig {
   relationships?: JoinerRelationship[]
   extends?: {
     serviceName: string
-    resolve: JoinerRelationship
+    relationship: JoinerRelationship
   }[]
   args?: Record<string, any> // Extra arguments to pass to the remoteFetchData callback
 }

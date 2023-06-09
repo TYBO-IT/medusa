@@ -152,7 +152,7 @@ export class RemoteJoiner {
           expandedRelationships.set(extend.serviceName, [])
         }
 
-        expandedRelationships.get(extend.serviceName)!.push(extend.resolve)
+        expandedRelationships.get(extend.serviceName)!.push(extend.relationship)
       }
     }
 
