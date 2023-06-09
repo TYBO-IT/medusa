@@ -1,10 +1,9 @@
 import {
-  ProductCategoryService,
-  ProductCollectionService,
-  ProductService,
-  ProductTagService,
-  ProductVariantService,
-} from "@services"
+  FindConfig,
+  JoinerServiceConfig,
+  ProductTypes,
+  SharedContext,
+} from "@medusajs/types"
 import {
   Product,
   ProductCategory,
@@ -12,7 +11,14 @@ import {
   ProductTag,
   ProductVariant,
 } from "@models"
-import { FindConfig, ProductTypes, SharedContext } from "@medusajs/types"
+import {
+  ProductCategoryService,
+  ProductCollectionService,
+  ProductService,
+  ProductTagService,
+  ProductVariantService,
+} from "@services"
+import { joinerConfig } from "./../joiner-config"
 
 type InjectedDependencies = {
   productService: ProductService<any>
@@ -55,6 +61,10 @@ export default class ProductModuleService<
     this.productTagService = productTagService
     this.productCategoryService = productCategoryService
     this.productCollectionService = productCollectionService
+  }
+
+  __joinerConfig(): JoinerServiceConfig {
+    return joinerConfig
   }
 
   async list(

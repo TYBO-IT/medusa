@@ -6312,6 +6312,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@medusajs/orchestration@^0.0.1, @medusajs/orchestration@workspace:packages/orchestration":
+  version: 0.0.0-use.local
+  resolution: "@medusajs/orchestration@workspace:packages/orchestration"
+  dependencies:
+    "@medusajs/types": ^1.8.7
+    "@medusajs/utils": ^1.9.0
+    cross-env: ^5.2.1
+    graphql: ^16.6.0
+    jest: ^25.5.4
+    ts-jest: ^25.5.1
+    typescript: ^4.4.4
+  languageName: unknown
+  linkType: soft
+
 "@medusajs/product@workspace:packages/product":
   version: 0.0.0-use.local
   resolution: "@medusajs/product@workspace:packages/product"
@@ -6358,7 +6372,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@medusajs/types@*, @medusajs/types@1.8.7, @medusajs/types@workspace:packages/types":
+"@medusajs/types@*, @medusajs/types@1.8.7, @medusajs/types@^1.8.7, @medusajs/types@workspace:packages/types":
   version: 0.0.0-use.local
   resolution: "@medusajs/types@workspace:packages/types"
   dependencies:
@@ -6370,7 +6384,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@medusajs/utils@1.9.0, @medusajs/utils@^1.8.2, @medusajs/utils@workspace:packages/utils":
+"@medusajs/utils@1.9.0, @medusajs/utils@^1.8.2, @medusajs/utils@^1.9.0, @medusajs/utils@workspace:packages/utils":
   version: 0.0.0-use.local
   resolution: "@medusajs/utils@workspace:packages/utils"
   dependencies:
@@ -33937,13 +33951,6 @@ __metadata:
   version: 1.5.0
   resolution: "pg-protocol@npm:1.5.0"
   checksum: add456c3f0412f2fa45319c582ad2106d211889806007aaaa66038e13c42fda02197bfefb8ad6f79a8bca9846875fda081540eb14e231eb53cd40da9bdc29b9c
-  languageName: node
-  linkType: hard
-
-"pg-protocol@npm:^1.6.0":
-  version: 1.6.0
-  resolution: "pg-protocol@npm:1.6.0"
-  checksum: 318a4d1e9cebd3927b10a8bc412f5017117a1f9a5fafb628d75847da7d1ab81c33250de58596bd0990029e14e92a995a851286d60fc236692299faf509572213
   languageName: node
   linkType: hard
 

@@ -1,6 +1,5 @@
 import { Logger as _Logger } from "winston"
 import { MedusaContainer } from "../common/medusa-container"
-import { JoinerServiceConfig } from "../joiner"
 
 export type Constructor<T> = new (...args: any[]) => T
 export * from "../common/medusa-container"
@@ -100,5 +99,4 @@ export type ModuleExports = {
     options: LoaderOptions,
     moduleDeclaration?: InternalModuleDeclaration
   ): Promise<void>
-  joinerConfig?: JoinerServiceConfig
 }
