@@ -11,7 +11,6 @@ import GraphQLParser from "./graphql-ast"
 
 const BASE_PATH = "_root"
 export class RemoteJoiner {
-  private serviceConfigs: JoinerServiceConfig[]
   private serviceConfigCache: Map<string, JoinerServiceConfig> = new Map()
 
   private static filterFields(
@@ -85,7 +84,7 @@ export class RemoteJoiner {
   }
 
   constructor(
-    serviceConfigs: JoinerServiceConfig[],
+    private serviceConfigs: JoinerServiceConfig[],
     private remoteFetchData: (
       expand: RemoteExpandProperty,
       pkField: string,
@@ -312,19 +311,20 @@ export class RemoteJoiner {
 
         await this.expandProperty(currentItems, parentServiceConfig!, expand)
 
-        const relationship = parentServiceConfig?.relationships?.find(
-          (relation) => relation.alias === property
-        )
-
         const nestedItems = RemoteJoiner.getNestedItems(currentItems, property)
 
         if (nestedItems.length > 0) {
-          const nextProp = relationship
-            ? {
-                ...currentQuery,
-                service: relationship.serviceName,
-              }
-            : currentQuery
+          const relationship = expand.serviceConfig
+
+          let nextProp = currentQuery
+          if (relationship) {
+            const relQuery = {
+              ...currentQuery,
+              service: relationship.serviceName,
+            }
+            delete relQuery.alias
+            nextProp = relQuery
+          }
 
           stack.push([
             nestedItems,
@@ -419,9 +419,19 @@ export class RemoteJoiner {
 
         if (Array.isArray(item[field])) {
           item[relationship.alias] = item[field]
-            .map((id) => relatedDataMap[id])
+            .map((id) => {
+              if (relationship.isList && !Array.isArray(relatedDataMap[id])) {
+                relatedDataMap[id] = [relatedDataMap[id]]
+              }
+
+              return relatedDataMap[id]
+            })
             .filter((relatedItem) => relatedItem !== undefined)
         } else {
+          if (relationship.isList && !Array.isArray(relatedDataMap[itemKey])) {
+            relatedDataMap[itemKey] = [relatedDataMap[itemKey]]
+          }
+
           item[relationship.alias] = relatedDataMap[itemKey]
         }
       }
