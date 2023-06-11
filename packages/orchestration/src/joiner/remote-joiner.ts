@@ -277,7 +277,7 @@ export class RemoteJoiner {
 
     const stack: [
       any[],
-      RemoteJoinerQuery,
+      Partial<RemoteJoinerQuery>,
       Map<string, RemoteExpandProperty>,
       string,
       Set<string>
@@ -319,10 +319,8 @@ export class RemoteJoiner {
           let nextProp = currentQuery
           if (relationship) {
             const relQuery = {
-              ...currentQuery,
               service: relationship.serviceName,
             }
-            delete relQuery.alias
             nextProp = relQuery
           }
 
