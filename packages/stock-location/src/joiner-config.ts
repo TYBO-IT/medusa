@@ -8,5 +8,8 @@ export const joinerConfig: JoinerServiceConfig = {
     {
       name: "stock_location",
     },
+    {
+      name: "stock_locations",
+    },
   ],
 }

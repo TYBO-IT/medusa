@@ -57,6 +57,20 @@ export class RemoteQuery {
     )
   }
 
+  public setFetchDataCallback(
+    remoteFetchData: (
+      expand: RemoteExpandProperty,
+      keyField: string,
+      ids?: (unknown | unknown[])[],
+      relationship?: any
+    ) => Promise<{
+      data: unknown[] | { [path: string]: unknown[] }
+      path?: string
+    }>
+  ): void {
+    this.remoteJoiner.setFetchDataCallback(remoteFetchData)
+  }
+
   private static getAllFieldsAndRelations(
     data: any,
     prefix = ""

@@ -87,7 +87,7 @@ export class RemoteJoiner {
     private serviceConfigs: JoinerServiceConfig[],
     private remoteFetchData: (
       expand: RemoteExpandProperty,
-      pkField: string,
+      keyField: string,
       ids?: (unknown | unknown[])[],
       relationship?: any
     ) => Promise<{
@@ -96,6 +96,20 @@ export class RemoteJoiner {
     }>
   ) {
     this.serviceConfigs = this.buildReferences(serviceConfigs)
+  }
+
+  public setFetchDataCallback(
+    remoteFetchData: (
+      expand: RemoteExpandProperty,
+      keyField: string,
+      ids?: (unknown | unknown[])[],
+      relationship?: any
+    ) => Promise<{
+      data: unknown[] | { [path: string]: unknown[] }
+      path?: string
+    }>
+  ): void {
+    this.remoteFetchData = remoteFetchData
   }
 
   private buildReferences(serviceConfigs: JoinerServiceConfig[]) {
