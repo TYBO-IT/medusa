@@ -31,6 +31,7 @@ declare global {
 
 export class MedusaModule {
   private static instances_: Map<string, any> = new Map()
+  private static loading_: Map<string, Promise<any>> = new Map()
   public static getLoadedModules(): Map<
     string,
     any & {
@@ -62,6 +63,20 @@ export class MedusaModule {
       return MedusaModule.instances_.get(hashKey)
     }
 
+    if (MedusaModule.loading_.has(hashKey)) {
+      return MedusaModule.loading_.get(hashKey)
+    }
+
+    let finishLoading: any
+    let errorLoading: any
+    MedusaModule.loading_.set(
+      hashKey,
+      new Promise((resolve, reject) => {
+        finishLoading = resolve
+        errorLoading = reject
+      })
+    )
+
     let modDeclaration = declaration
     if (declaration?.scope !== MODULE_SCOPE.EXTERNAL) {
       modDeclaration = {
@@ -86,11 +101,16 @@ export class MedusaModule {
       moduleExports
     )
 
-    await moduleLoader({
-      container,
-      moduleResolutions,
-      logger,
-    })
+    try {
+      await moduleLoader({
+        container,
+        moduleResolutions,
+        logger,
+      })
+    } catch (err) {
+      errorLoading(err)
+      throw err
+    }
 
     const services = {}
 
@@ -109,6 +129,8 @@ export class MedusaModule {
     }
 
     MedusaModule.instances_.set(hashKey, services)
+    finishLoading(services)
+    MedusaModule.loading_.delete(hashKey)
 
     return services
   }
