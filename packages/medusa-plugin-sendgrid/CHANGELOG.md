@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.3.10
+
+### Patch Changes
+
+- [#4384](https://github.com/medusajs/medusa/pull/4384) [`f65a501da`](https://github.com/medusajs/medusa/commit/f65a501da5101da75217a2b69a61ccd4fd3a3b4d) Thanks [@pevey](https://github.com/pevey)! - feat(medusa-plugin-sendgrid): Add error messages to SendgridService.sendNotification
+
 ## 1.3.9
 
 ### Patch Changes
